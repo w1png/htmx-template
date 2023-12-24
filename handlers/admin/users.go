@@ -197,7 +197,9 @@ func PutUserHandler(c echo.Context) error {
 			return c.String(http.StatusInternalServerError, "Внутренняя ошибка сервера")
 		}
 	}
-	user.IsAdmin = is_admin
+	if user.ID != 1 {
+		user.IsAdmin = is_admin
+	}
 
 	if err := storage.StorageInstance.UpdateUser(user); err != nil {
 		log.Error(err)

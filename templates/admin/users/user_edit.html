@@ -1,6 +1,6 @@
 {{ define "user" }}
-<form class="w-full lg:w-[min(300px,30%)] border-2 rounded-xl p-4 flex flex-col gap-2" id="add_edit_admin_form"
-  hx-indicator="#add_admin_loading" hx-target="this" hx-target-error="#add_admin_error" hx-swap="outerHTML">
+<form class="w-full lg:w-[min(300px,30%)] border-2 rounded-xl p-4 flex flex-col gap-2" id="add_edit_user_form"
+  hx-indicator="#add_user_loading" hx-target="this" hx-target-error="#add_user_error" hx-swap="outerHTML">
   <p class="text-xl">Редактировать администратора</p>
   <input class="admin-input h-10 w-full" value="{{ .Username }}" type="text" autocomplete="username" name="username"
     id="username" placeholder="Имя пользователя" required />
@@ -13,8 +13,8 @@
       {{ end }} />
     <label class="admin-input-label" for="is_admin">Администратор</label>
   </div>
-  <p class="text-sm text-red-400" id="add_admin_error"></p>
-  <span class="htmx-indicator" id="add_admin_loading">{{ template "loading" }}</span>
+  <p class="text-sm text-red-400" id="add_user_error"></p>
+  <span class="htmx-indicator" id="add_user_loading">{{ template "loading" }}</span>
   <button class="admin-submit" type="submit" hx-put="/admin/api/users/{{ .ID }}" data-loading-disable>
     Сохранить
   </button>
