@@ -129,8 +129,16 @@ func PostUserHandler(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Поля не могут быть пустыми")
 	}
 
+	if !models.IsUsernameValid(username) {
+		return c.String(http.StatusBadRequest, models.GetUsernameRules())
+	}
+
 	if password != password_repeat {
 		return c.String(http.StatusBadRequest, "Пароли не совпадают")
+	}
+
+	if !models.IsPasswordValid(password) {
+		return c.String(http.StatusBadRequest, models.GetPasswordRules())
 	}
 
 	if _, err := storage.StorageInstance.GetUserByUsername(username); err == nil {
@@ -176,6 +184,10 @@ func PutUserHandler(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Имя пользователя не может быть пустым")
 	}
 
+	if !models.IsUsernameValid(username) {
+		return c.String(http.StatusBadRequest, models.GetUsernameRules())
+	}
+
 	user, err := storage.StorageInstance.GetUserById(uint(id))
 	if err != nil {
 		if reflect.TypeOf(err) == reflect.TypeOf(&errors.ObjectNotFoundError{}) {
@@ -190,6 +202,10 @@ func PutUserHandler(c echo.Context) error {
 	if password != "" {
 		if password != password_repeat {
 			return c.String(http.StatusBadRequest, "Пароли не совпадают")
+		}
+
+		if !models.IsPasswordValid(password) {
+			return c.String(http.StatusBadRequest, models.GetPasswordRules())
 		}
 
 		user.PasswordHash, err = user.HashPassword(password)
