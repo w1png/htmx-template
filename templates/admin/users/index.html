@@ -8,7 +8,7 @@
   {{ block "add_user_form" . }}
   <form class="w-full lg:w-[min(300px,30%)] border-2 rounded-xl p-4 flex flex-col gap-2" id="add_edit_user_form"
     hx-indicator="#add_user_loading" hx-target="#user_list" hx-target-error="#add_user_error" hx-post="/admin/api/users"
-    hx-swap="afterbegin">
+    hx-swap="afterbegin" hx-on::after-request="ClearFormOnSubmit(event, this)">
     <p class="text-xl">Добавить администратора</p>
     <input class="admin-input h-10 w-full" type="text" autocomplete="username" name="username" id="username"
       placeholder="Имя пользователя" required />

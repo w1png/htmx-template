@@ -246,10 +246,10 @@ func DeleteUserHandler(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Внутренняя ошибка сервера")
 	}
 
-	users, err := storage.StorageInstance.GetUsers()
-	if err != nil {
-		return c.String(http.StatusInternalServerError, "Внутренняя ошибка сервера")
-	}
+	// users, err := storage.StorageInstance.GetUsers()
+	// if err != nil {
+	// 	return c.String(http.StatusInternalServerError, "Внутренняя ошибка сервера")
+	// }
 
-	return sendUsers(c, users)
+	return c.HTMLBlob(http.StatusOK, []byte(""))
 }
