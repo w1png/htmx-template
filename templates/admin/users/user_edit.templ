@@ -41,14 +41,7 @@ templ UserEdit(user *models.User) {
 			placeholder="Повтор пароля"
 			required
 		/>
-		<div class="flex flex-row gap-2 items-center">
-			if user.IsAdmin {
-				<input class="admin-checkbox" type="checkbox" name="is_admin" id="is_admin" value="true" checked/>
-			} else {
-				<input class="admin-checkbox" type="checkbox" name="is_admin" id="is_admin" value="true"/>
-			}
-			<label class="admin-input-label" for="is_admin">Администратор</label>
-		</div>
+		@components.AdminCheckbox("is_admin", "is_admin", "true", user.IsAdmin)
 		<p class="text-sm text-red-400" id="add_user_error"></p>
 		@components.Loading("add_user_loading")
 		<button class="admin-submit" type="submit" hx-put={ fmt.Sprintf("/admin/api/users/%d", user.ID) } data-loading-disable>

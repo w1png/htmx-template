@@ -30,13 +30,13 @@
 
 @keyframes slide-from-right {
   from {
-    transform: translateX(50vw);
+    transform: scale(0.5);
   }
 }
 
 @keyframes slide-to-left {
   to {
-    transform: translateX(-50vw);
+    transform: scale(1);
   }
 }
 
@@ -60,13 +60,28 @@
 }
 
 .admin-submit {
-  @apply bg-blue-500 text-white py-2 px-4 hover:bg-white border-2 border-blue-500 hover:text-blue-500 rounded-lg transition-colors ease-in-out duration-300;
+  @apply bg-blue-500 text-white py-2 px-4 hover:bg-white border-2 border-blue-500 hover:text-blue-500 rounded-lg
+transition-colors ease-in-out duration-300;
 }
 
 .admin-delete {
-  @apply bg-red-500 text-white py-2 px-4 hover:bg-white border-2 border-red-500 hover:text-red-500 rounded-lg transition-colors ease-in-out duration-300;
+  @apply bg-red-500 text-white py-2 px-4 hover:bg-white border-2 border-red-500 hover:text-red-500 rounded-lg
+transition-colors ease-in-out duration-300;
+}
+
+.admin-checkbox:before {
+  content: "";
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  @apply bg-white border-[2px] transition-colors ease-in-out duration-300;
 }
 
 .admin-checkbox {
-  @apply accent-blue-500 p-1;
+  @apply flex flex-row gap-2 items-center cursor-pointer select-none;
+}
+
+input[type="checkbox"]:checked + .admin-checkbox:before {
+  @apply bg-blue-500 border-blue-500;
 }
