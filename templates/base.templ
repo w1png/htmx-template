@@ -1,0 +1,24 @@
+package templates 
+
+import "github.com/w1png/htmx-template/utils"
+
+templ Base(data utils.ResponseData) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="utf-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<meta http-equiv="x-ua-compatible" content="ie=edge"/>
+			<title>website name</title>
+			<link rel="icon" type="image/png" sizes="32x32" href="/static/logo.png"/>
+			<link rel="stylesheet" href="/static/output.css"/>
+			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+			<script src="https://unpkg.com/htmx.org/dist/ext/response-targets.js"></script>
+			<script src="https://unpkg.com/htmx.org/dist/ext/loading-states.js"></script>
+			<script src="/static/javascript/utils.js"></script>
+		</head>
+		<body hx-ext="response-targets loading-states">
+			{ children... }
+		</body>
+	</html>
+}

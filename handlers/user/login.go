@@ -1,7 +1,6 @@
 package user_handlers
 
 import (
-	"html/template"
 	"net/http"
 	"reflect"
 
@@ -10,6 +9,8 @@ import (
 	"github.com/w1png/htmx-template/config"
 	"github.com/w1png/htmx-template/errors"
 	"github.com/w1png/htmx-template/storage"
+	admin_templates "github.com/w1png/htmx-template/templates/admin"
+	user_templates "github.com/w1png/htmx-template/templates/user"
 	"github.com/w1png/htmx-template/utils"
 )
 
@@ -20,12 +21,7 @@ func LoginPageApiHandler(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/admin")
 	}
 
-	tmpl, err := template.ParseFiles("templates/user/login.html")
-	if err != nil {
-		return err
-	}
-
-	return tmpl.ExecuteTemplate(c.Response(), "content", utils.MarshalResponse(c, nil))
+	return utils.Render(c, user_templates.LoginApi())
 }
 
 func LoginPageHandler(c echo.Context) error {
@@ -33,16 +29,7 @@ func LoginPageHandler(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/admin")
 	}
 
-	tmpl, err := template.ParseFiles(
-		"templates/base.html",
-		"templates/navbar.html",
-		"templates/user/login.html",
-	)
-	if err != nil {
-		return err
-	}
-
-	return tmpl.ExecuteTemplate(c.Response(), "base", utils.MarshalResponse(c, nil))
+	return utils.Render(c, user_templates.Login(*utils.MarshalResponse(c, nil)))
 }
 
 func PostLoginHandler(c echo.Context) error {
@@ -88,14 +75,5 @@ func PostLoginHandler(c echo.Context) error {
 		Path:  "/",
 	})
 
-	tmpl, err := template.ParseFiles(
-		"templates/base.html",
-		"templates/admin/navbar.html",
-		"templates/admin/index.html",
-	)
-	if err != nil {
-		return err
-	}
-
-	return tmpl.ExecuteTemplate(c.Response().Writer, "body", utils.MarshalResponse(c, nil))
+	return utils.Render(c, admin_templates.IndexApiNavbar())
 }

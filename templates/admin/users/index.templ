@@ -1,0 +1,26 @@
+package admin_users_templates
+
+import "github.com/w1png/htmx-template/models"
+import "github.com/w1png/htmx-template/utils"
+import "github.com/w1png/htmx-template/templates/admin"
+
+templ IndexApi(users []*models.User) {
+	<div
+		class="container mx-auto p-8 mt-16 sample-transition flex flex-col-reverse lg:flex-row gap-4"
+		hx-ext="response-targets"
+		id="swappable_content"
+	>
+		<div class="grow flex flex-col gap-2" id="user_list">
+			for _, user := range users {
+				@User(user)
+			}
+		</div>
+		@AddUserForm()
+	</div>
+}
+
+templ Index(data utils.ResponseData) {
+	@admin_templates.Base(data) {
+		@IndexApi(data.Data.([]*models.User))
+	}
+}

@@ -1,30 +1,15 @@
 package user_handlers
 
 import (
-	"html/template"
-
 	"github.com/labstack/echo"
+	user_templates "github.com/w1png/htmx-template/templates/user"
 	"github.com/w1png/htmx-template/utils"
 )
 
 func IndexApiHandler(c echo.Context) error {
-	tmpl, err := template.ParseFiles("templates/user/index.html")
-	if err != nil {
-		return err
-	}
-
-	return tmpl.Execute(c.Response(), utils.MarshalResponse(c, nil))
+	return utils.Render(c, user_templates.IndexApi())
 }
 
 func IndexHandler(c echo.Context) error {
-	tmpl, err := template.ParseFiles(
-		"templates/base.html",
-		"templates/navbar.html",
-		"templates/user/index.html",
-	)
-	if err != nil {
-		return err
-	}
-
-	return tmpl.ExecuteTemplate(c.Response(), "base", utils.MarshalResponse(c, nil))
+	return utils.Render(c, user_templates.Index(*utils.MarshalResponse(c, nil)))
 }

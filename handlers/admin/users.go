@@ -2,7 +2,6 @@ package admin_handlers
 
 import (
 	"fmt"
-	"html/template"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -12,87 +11,26 @@ import (
 	"github.com/w1png/htmx-template/errors"
 	"github.com/w1png/htmx-template/models"
 	"github.com/w1png/htmx-template/storage"
+	admin_users_templates "github.com/w1png/htmx-template/templates/admin/users"
 	"github.com/w1png/htmx-template/utils"
 )
 
-func sendUser(c echo.Context, user *models.User, is_edit bool) error {
-	edit := ""
-	if is_edit {
-		edit = "_edit"
-	}
-	tmpl, err := template.ParseFiles(
-		fmt.Sprintf("templates/admin/users/user%s.html", edit),
-		"templates/components/loading.html",
-	)
-
-	if err != nil {
-		return err
-	}
-
-	return tmpl.ExecuteTemplate(c.Response().Writer, "user", user)
-}
-
-func sendUsers(c echo.Context, users []*models.User) error {
-	tmpl, err := template.ParseFiles(
-		"templates/admin/users/index.html",
-		"templates/admin/users/user.html",
-		"templates/components/loading.html",
-	)
-	if err != nil {
-		return err
-	}
-
-	return tmpl.ExecuteTemplate(c.Response().Writer, "users", users)
-}
-
-func sendAddUser(c echo.Context) error {
-	tmpl, err := template.ParseFiles(
-		"templates/admin/users/index.html",
-		"templates/components/loading.html",
-	)
-	if err != nil {
-		return err
-	}
-
-	return tmpl.ExecuteTemplate(c.Response().Writer, "add_user_form", nil)
-}
-
 func UserIndexHandler(c echo.Context) error {
-	tmpl, err := template.ParseFiles(
-		"templates/base.html",
-		"templates/admin/navbar.html",
-		"templates/admin/users/index.html",
-		"templates/admin/users/user.html",
-		"templates/components/loading.html",
-	)
-	if err != nil {
-		return err
-	}
-
 	users, err := storage.StorageInstance.GetUsers()
 	if err != nil {
 		return err
 	}
 
-	return tmpl.ExecuteTemplate(c.Response().Writer, "base", utils.MarshalResponse(c, users))
+	return utils.Render(c, admin_users_templates.Index(*utils.MarshalResponse(c, users)))
 }
 
 func UserIndexApiHandler(c echo.Context) error {
-	tmpl, err := template.ParseFiles(
-		"templates/admin/users/index.html",
-		"templates/admin/users/user.html",
-		"templates/components/loading.html",
-	)
-	if err != nil {
-		return err
-	}
-
 	users, err := storage.StorageInstance.GetUsers()
 	if err != nil {
 		return err
 	}
 
-	return tmpl.ExecuteTemplate(c.Response().Writer, "content", utils.MarshalResponse(c, users))
+	return utils.Render(c, admin_users_templates.IndexApi(users))
 }
 
 func GetUserHandler(c echo.Context) error {
@@ -110,7 +48,7 @@ func GetUserHandler(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Внутренняя ошибка сервера")
 	}
 
-	return sendUser(c, user, false)
+	return utils.Render(c, admin_users_templates.User(user))
 }
 
 func PostUserHandler(c echo.Context) error {
@@ -160,7 +98,7 @@ func PostUserHandler(c echo.Context) error {
 
 	c.Response().Header().Del("HX-Reswap")
 
-	return sendUser(c, user, false)
+	return utils.Render(c, admin_users_templates.User(user))
 }
 
 func PutUserHandler(c echo.Context) error {
@@ -225,7 +163,7 @@ func PutUserHandler(c echo.Context) error {
 	c.Response().Header().Del("HX-Reswap")
 	c.Response().Header().Set("HX-Trigger", fmt.Sprintf("user_saved_%d", user.ID))
 
-	return sendAddUser(c)
+	return utils.Render(c, admin_users_templates.AddUserForm())
 }
 
 func EditUserHandler(c echo.Context) error {
@@ -243,11 +181,11 @@ func EditUserHandler(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Внутренняя ошибка сервера")
 	}
 
-	return sendUser(c, user, true)
+	return utils.Render(c, admin_users_templates.UserEdit(user))
 }
 
 func GetAddUserHandler(c echo.Context) error {
-	return sendAddUser(c)
+	return utils.Render(c, admin_users_templates.AddUserForm())
 }
 
 func DeleteUserHandler(c echo.Context) error {
@@ -263,11 +201,6 @@ func DeleteUserHandler(c echo.Context) error {
 		log.Error(err)
 		return c.String(http.StatusInternalServerError, "Внутренняя ошибка сервера")
 	}
-
-	// users, err := storage.StorageInstance.GetUsers()
-	// if err != nil {
-	// 	return c.String(http.StatusInternalServerError, "Внутренняя ошибка сервера")
-	// }
 
 	return c.HTMLBlob(http.StatusOK, []byte(""))
 }
