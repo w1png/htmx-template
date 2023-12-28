@@ -1,8 +1,6 @@
 package templates 
 
-import "github.com/w1png/htmx-template/utils"
-
-templ Base(data utils.ResponseData) {
+templ Base(ctx context.Context) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>

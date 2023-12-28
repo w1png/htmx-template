@@ -10,7 +10,12 @@ type Storage interface {
 	CreateUser(user *models.User) error
 	GetUserById(id uint) (*models.User, error)
 	GetUserByUsername(username string) (*models.User, error)
-	GetUsers() ([]*models.User, error)
+
+	GetAllUsers() ([]*models.User, error)
+	GetUsers(offset, limit int) ([]*models.User, error)
+	GetUsersByUsernameFuzzy(username string) ([]*models.User, error)
+
+	GetUsersCount() (int, error)
 	UpdateUser(user *models.User) error
 	DeleteUserById(id uint) error
 }

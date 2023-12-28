@@ -1,7 +1,6 @@
 package admin_users_templates
 
 import "github.com/w1png/htmx-template/models"
-import "github.com/w1png/htmx-template/utils"
 import "github.com/w1png/htmx-template/templates/admin"
 
 templ IndexApi(users []*models.User) {
@@ -19,8 +18,8 @@ templ IndexApi(users []*models.User) {
 	</div>
 }
 
-templ Index(data utils.ResponseData) {
-	@admin_templates.Base(data) {
-		@IndexApi(data.Data.([]*models.User))
+templ Index(ctx context.Context, users []*models.User) {
+	@admin_templates.Base(ctx) {
+		@IndexApi(users)
 	}
 }

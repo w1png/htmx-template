@@ -16,16 +16,16 @@ import (
 )
 
 func UserIndexHandler(c echo.Context) error {
-	users, err := storage.StorageInstance.GetUsers()
+	users, err := storage.StorageInstance.GetAllUsers()
 	if err != nil {
 		return err
 	}
 
-	return utils.Render(c, admin_users_templates.Index(*utils.MarshalResponse(c, users)))
+	return utils.Render(c, admin_users_templates.Index(c.Request().Context(), users))
 }
 
 func UserIndexApiHandler(c echo.Context) error {
-	users, err := storage.StorageInstance.GetUsers()
+	users, err := storage.StorageInstance.GetAllUsers()
 	if err != nil {
 		return err
 	}

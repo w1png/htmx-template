@@ -1,11 +1,11 @@
 package user_templates 
 
-import "github.com/w1png/htmx-template/utils"
 import "github.com/w1png/htmx-template/templates"
+import "github.com/w1png/htmx-template/utils"
 
-templ Base(data utils.ResponseData) {
-	@templates.Base(data) {
-		@Navbar(data.User)
+templ Base(ctx context.Context) {
+	@templates.Base(ctx) {
+		@Navbar(utils.GetUserFromContext(ctx))
 		{ children... }
 	}
 }

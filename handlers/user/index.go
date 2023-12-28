@@ -11,5 +11,5 @@ func IndexApiHandler(c echo.Context) error {
 }
 
 func IndexHandler(c echo.Context) error {
-	return utils.Render(c, user_templates.Index(*utils.MarshalResponse(c, nil)))
+	return utils.Render(c, user_templates.Index(c.Request().Context()))
 }

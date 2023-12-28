@@ -1,10 +1,9 @@
 package admin_templates 
 
-import "github.com/w1png/htmx-template/utils"
 import "github.com/w1png/htmx-template/templates"
 
-templ Base(data utils.ResponseData) {
-	@templates.Base(data) {
+templ Base(ctx context.Context) {
+	@templates.Base(ctx) {
 		@Navbar()
 		{ children... }
 	}
