@@ -6,14 +6,14 @@ import "github.com/w1png/htmx-template/templates/components"
 
 templ IndexApi(users []*models.User, next_page int) {
 	<div
-		class="container mx-auto p-8 mt-16 sample-transition flex flex-col-reverse lg:flex-row gap-4"
+		class="container mx-auto p-8 mt-16 sample-transition flex flex-col-reverse lg:flex-row gap-4 items-center lg:items-start"
 		hx-ext="response-targets"
 		id="swappable_content"
 	>
-		<div class="w-full h-fit flex flex-col gap-2 justify-center">
-			<div class="h-16 w-[min(300px,w-full)]">
+		<div class="w-full lg:w-2/3 flex flex-col gap-2 items-center lg:items-start">
+			<div class="h-16 w-[18rem]">
 				<input
-					class="search-input"
+					class="search-input w-full"
 					name="search_username"
 					placeholder="Имя пользователя"
 					id="search_username"
@@ -22,7 +22,7 @@ templ IndexApi(users []*models.User, next_page int) {
 					hx-target="#user_list"
 				/>
 			</div>
-			<div class="flex flex-col">
+			<div class="flex flex-col w-full">
 				<div class="grow flex flex-col gap-2" id="user_list">
 					@Users(users, next_page)
 				</div>
