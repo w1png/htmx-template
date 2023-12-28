@@ -26,11 +26,7 @@ templ bare_user(user *models.User, next_page int, is_last bool) {
 			></span>
 		}
 		@components.Loading(fmt.Sprintf("user_loading_%d", user.ID))
-		if user.IsAdmin {
-			<p class="text-red-400 underline text-xl w-1/2 truncate">{ user.Username }</p>
-		} else {
-			<p class="text-xl w-1/2 truncate">{ user.Username }</p>
-		}
+		<p class={ "text-xl w-1/2 truncate", templ.KV("underline text-red-400", user.IsAdmin) }>{ user.Username }</p>
 		<p class="text-sm text-red-400" id={ fmt.Sprintf("user_error_%d", user.ID) }></p>
 		<div
 			class="grow flex flex-row items-center justify-end gap-2"
