@@ -248,7 +248,7 @@ func SearchUsersHandler(c echo.Context) error {
 			return err
 		}
 	} else {
-		if users, err = storage.StorageInstance.GetUsersByUsernameFuzzy(username); err != nil {
+		if users, err = storage.StorageInstance.GetAllUsersByUsernameFuzzy(username); err != nil {
 			return err
 		}
 	}

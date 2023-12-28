@@ -13,7 +13,8 @@ type Storage interface {
 
 	GetAllUsers() ([]*models.User, error)
 	GetUsers(offset, limit int) ([]*models.User, error)
-	GetUsersByUsernameFuzzy(username string) ([]*models.User, error)
+	GetAllUsersByUsernameFuzzy(username string) ([]*models.User, error)
+	GetUsersByUsernameFuzzy(username string, offset, limit int) ([]*models.User, error)
 
 	GetUsersCount() (int, error)
 	UpdateUser(user *models.User) error

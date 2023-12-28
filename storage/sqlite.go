@@ -64,9 +64,18 @@ func (s *SqliteStorage) GetUserByUsername(username string) (*models.User, error)
 	return &user, nil
 }
 
-func (s *SqliteStorage) GetUsersByUsernameFuzzy(username string) ([]*models.User, error) {
+func (s *SqliteStorage) GetAllUsersByUsernameFuzzy(username string) ([]*models.User, error) {
 	var users []*models.User
 	if err := s.DB.Where("username LIKE ?", fmt.Sprintf("%%%s%%", username)).Find(&users).Error; err != nil {
+		return users, err
+	}
+
+	return users, nil
+}
+
+func (s *SqliteStorage) GetUsersByUsernameFuzzy(username string, offset, limit int) ([]*models.User, error) {
+	var users []*models.User
+	if err := s.DB.Where("username LIKE ?", fmt.Sprintf("%%%s%%", username)).Offset(offset).Limit(limit).Find(&users).Error; err != nil {
 		return users, err
 	}
 
