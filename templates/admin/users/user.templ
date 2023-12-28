@@ -64,6 +64,7 @@ templ bare_user(user *models.User, next_page int, is_last bool) {
 				hx-get={ fmt.Sprintf("/admin/api/users/%d/edit", user.ID) }
 				hx-swap="outerHTML"
 				hx-target="#add_edit_user_form"
+				onclick={ scrollToAddUserForm() }
 				data-loading-disable
 			>
 				<p class="hidden lg:flex">Редактировать</p>

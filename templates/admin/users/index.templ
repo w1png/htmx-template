@@ -4,6 +4,12 @@ import "github.com/w1png/htmx-template/models"
 import "github.com/w1png/htmx-template/templates/admin"
 import "github.com/w1png/htmx-template/templates/components"
 
+script scrollToAddUserForm() {
+  document.getElementById("add_edit_user_form").scrollIntoView({
+    behavior: "smooth",
+  })
+}
+
 templ IndexApi(users []*models.User, next_page int) {
 	<div
 		class="container mx-auto p-8 mt-16 sample-transition flex flex-col-reverse lg:flex-row gap-4 items-center lg:items-start"
