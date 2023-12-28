@@ -9,10 +9,21 @@ templ IndexApi(users []*models.User) {
 		hx-ext="response-targets"
 		id="swappable_content"
 	>
-		<div class="grow flex flex-col gap-2" id="user_list">
-			for _, user := range users {
-				@User(user)
-			}
+		<div class="w-full h-fit flex flex-col gap-2 justify-center">
+			<div class="h-16 w-[min(300px,w-full)]">
+				<input
+					class="search-input"
+					name="search_username"
+					placeholder="Имя пользователя"
+					id="search_username"
+					hx-post="/admin/api/users/search"
+					hx-trigger="input changed delay:200ms, search_users"
+					hx-target="#user_list"
+				/>
+			</div>
+			<div class="grow flex flex-col gap-2" id="user_list">
+				@Users(users)
+			</div>
 		</div>
 		@AddUserForm()
 	</div>

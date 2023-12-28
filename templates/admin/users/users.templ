@@ -1,0 +1,9 @@
+package admin_users_templates
+
+import "github.com/w1png/htmx-template/models"
+
+templ Users(users []*models.User) {
+	for _, user := range users {
+		@User(user)
+	}
+}

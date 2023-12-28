@@ -204,3 +204,25 @@ func DeleteUserHandler(c echo.Context) error {
 
 	return c.HTMLBlob(http.StatusOK, []byte(""))
 }
+
+func SearchUsersHandler(c echo.Context) error {
+	if err := c.Request().ParseForm(); err != nil {
+		return err
+	}
+
+	username := c.FormValue("search_username")
+
+	var users []*models.User
+	var err error
+	if username == "" {
+		if users, err = storage.StorageInstance.GetAllUsers(); err != nil {
+			return err
+		}
+	} else {
+		if users, err = storage.StorageInstance.GetUsersByUsernameFuzzy(username); err != nil {
+			return err
+		}
+	}
+
+	return utils.Render(c, admin_users_templates.Users(users))
+}
