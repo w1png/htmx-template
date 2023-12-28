@@ -163,7 +163,7 @@ animation-fill-mode: forwards;
 }
 
 .modal {
-@apply absolute z-50 top-[calc(50vh-10rem)] left-[calc(50vw-10rem)] bg-white rounded-xl w-[20rem] scale-0 flex flex-col;
+@apply fixed z-50 top-[calc(50vh-10rem)] left-[calc(50vw-10rem)] bg-white rounded-xl w-[20rem] scale-0 flex flex-col;
 }
 
 .modal[data-open="initial"] {
