@@ -2,8 +2,9 @@ package admin_users_templates
 
 import "github.com/w1png/htmx-template/models"
 import "github.com/w1png/htmx-template/templates/admin"
+import "github.com/w1png/htmx-template/templates/components"
 
-templ IndexApi(users []*models.User) {
+templ IndexApi(users []*models.User, next_page int) {
 	<div
 		class="container mx-auto p-8 mt-16 sample-transition flex flex-col-reverse lg:flex-row gap-4"
 		hx-ext="response-targets"
@@ -21,16 +22,22 @@ templ IndexApi(users []*models.User) {
 					hx-target="#user_list"
 				/>
 			</div>
-			<div class="grow flex flex-col gap-2" id="user_list">
-				@Users(users)
+			<div class="flex flex-col">
+				<div class="grow flex flex-col gap-2" id="user_list">
+					@Users(users, next_page)
+				</div>
+				<div class="flex flex-row">
+					@components.Loading("pagination_loading")
+					<p class="text-sm text-red-400"></p>
+				</div>
 			</div>
 		</div>
 		@AddUserForm()
 	</div>
 }
 
-templ Index(ctx context.Context, users []*models.User) {
+templ Index(ctx context.Context, users []*models.User, next_page int) {
 	@admin_templates.Base(ctx) {
-		@IndexApi(users)
+		@IndexApi(users, next_page)
 	}
 }

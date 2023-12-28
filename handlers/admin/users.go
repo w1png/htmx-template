@@ -2,6 +2,7 @@ package admin_handlers
 
 import (
 	"fmt"
+	"math"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -15,13 +16,36 @@ import (
 	"github.com/w1png/htmx-template/utils"
 )
 
+func getNextPage(page int) (int, error) {
+	users_count, err := storage.StorageInstance.GetUsersCount()
+	if err != nil {
+		return -1, err
+	}
+
+	total_pages := int(math.Ceil(float64(users_count) / float64(models.USERS_PER_PAGE)))
+	if total_pages <= page {
+		return -1, nil
+	}
+
+	return page + 1, nil
+}
+
+func getOffsetAndLimit(page int) (int, int) {
+	return models.USERS_PER_PAGE * (page - 1), models.USERS_PER_PAGE
+}
+
 func UserIndexHandler(c echo.Context) error {
-	users, err := storage.StorageInstance.GetAllUsers()
+	users, err := storage.StorageInstance.GetUsers(getOffsetAndLimit(1))
 	if err != nil {
 		return err
 	}
 
-	return utils.Render(c, admin_users_templates.Index(c.Request().Context(), users))
+	next_page, err := getNextPage(1)
+	if err != nil {
+		return err
+	}
+
+	return utils.Render(c, admin_users_templates.Index(c.Request().Context(), users, next_page))
 }
 
 func UserIndexApiHandler(c echo.Context) error {
@@ -30,7 +54,12 @@ func UserIndexApiHandler(c echo.Context) error {
 		return err
 	}
 
-	return utils.Render(c, admin_users_templates.IndexApi(users))
+	next_page, err := getNextPage(1)
+	if err != nil {
+		return err
+	}
+
+	return utils.Render(c, admin_users_templates.IndexApi(users, next_page))
 }
 
 func GetUserHandler(c echo.Context) error {
@@ -224,5 +253,24 @@ func SearchUsersHandler(c echo.Context) error {
 		}
 	}
 
-	return utils.Render(c, admin_users_templates.Users(users))
+	return utils.Render(c, admin_users_templates.Users(users, -1))
+}
+
+func GetUsersPage(c echo.Context) error {
+	page, err := strconv.Atoi(c.Param("page"))
+	if err != nil {
+		return err
+	}
+
+	users, err := storage.StorageInstance.GetUsers(getOffsetAndLimit(page))
+	if err != nil {
+		return err
+	}
+
+	next_page, err := getNextPage(page)
+	if err != nil {
+		return err
+	}
+
+	return utils.Render(c, admin_users_templates.Users(users, next_page))
 }

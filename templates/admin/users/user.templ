@@ -4,7 +4,7 @@ import "github.com/w1png/htmx-template/models"
 import "github.com/w1png/htmx-template/templates/components"
 import "fmt"
 
-templ User(user *models.User) {
+templ bare_user(user *models.User, next_page int, is_last bool) {
 	<div
 		class="flex flex-row h-16 w-full items-center rounded-xl border-2 px-4"
 		hx-target-error={ fmt.Sprintf("#user_error_%d", user.ID) }
@@ -12,14 +12,24 @@ templ User(user *models.User) {
 		hx-target="this"
 		hx-swap="outerHTML"
 		hx-get={ fmt.Sprintf("/admin/api/users/%d", user.ID) }
-		onsubmit=""
 		hx-trigger={ fmt.Sprintf("user_saved_%d from:body", user.ID) }
 	>
+		if is_last {
+			<span
+				class="opacity-0 h-0 w-0"
+				hx-get={ fmt.Sprintf("/admin/api/users/page/%d", next_page) }
+				hx-target="#user_list"
+				hx-target-error="#pagination_error"
+				hx-swap="beforeend"
+				hx-trigger="revealed"
+				hx-indicator="#pagination_loading"
+			></span>
+		}
 		@components.Loading(fmt.Sprintf("user_loading_%d", user.ID))
 		if user.IsAdmin {
-			<p class="text-red-400 underline text-xl w-fit">{ user.Username }</p>
+			<p class="text-red-400 underline text-xl w-1/2 truncate">{ user.Username }</p>
 		} else {
-			<p class="text-xl w-fit">{ user.Username }</p>
+			<p class="text-xl w-1/2 truncate">{ user.Username }</p>
 		}
 		<p class="text-sm text-red-400" id={ fmt.Sprintf("user_error_%d", user.ID) }></p>
 		<div
@@ -43,4 +53,12 @@ templ User(user *models.User) {
 			</button>
 		</div>
 	</div>
+}
+
+templ User(user *models.User) {
+	@bare_user(user, -1, false)
+}
+
+templ lastUser(user *models.User, next_page int) {
+	@bare_user(user, next_page, true)
 }

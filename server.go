@@ -74,6 +74,7 @@ func (s *HTTPServer) gatherAdminApiRoutes(g *echo.Group) {
 	api_group.GET("/users/add", admin_handlers.GetAddUserHandler)
 	api_group.POST("/users/search", admin_handlers.SearchUsersHandler)
 	api_group.DELETE("/users/:id", admin_handlers.DeleteUserHandler)
+	api_group.GET("/users/page/:page", admin_handlers.GetUsersPage)
 }
 
 func (s *HTTPServer) Run() error {
