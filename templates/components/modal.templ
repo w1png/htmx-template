@@ -1,0 +1,36 @@
+package components
+
+import "fmt"
+
+script ToggleModal(id string) {
+  const modal = document.getElementById(id);
+  const overlay = document.getElementById("overlay_" + id);
+  const is_open = modal.dataset.open === "true";
+
+  overlay.dataset.open = !is_open;
+  modal.dataset.open = !is_open;
+}
+
+script OpenModal(id string) {
+  const modal = document.getElementById(id);
+  const overlay = document.getElementById("overlay_" + id);
+
+  overlay.dataset.open = true;
+  modal.dataset.open = true;
+}
+
+script CloseModal(id string) {
+  const modal = document.getElementById(id);
+  const overlay = document.getElementById("overlay_" + id);
+
+  overlay.dataset.open = false;
+  modal.dataset.open = false;
+}
+
+templ Modal(id string) {
+	<div data-open="initial" id={ fmt.Sprintf("overlay_%s", id) } class="modal-overlay" onclick={ ToggleModal(id) }></div>
+	<div data-open="initial" id={ id } class="modal">
+		<div class="w-full p-2 flex items-center"><div onclick={ CloseModal(id) } class="w-4 h-4 bg-red-400 rounded-full cursor-pointer"></div></div>
+		{ children... }
+	</div>
+}
