@@ -184,3 +184,20 @@ input[type="checkbox"]:checked + .admin-checkbox:before {
   animation-timing-function: ease-in-out;
   animation-fill-mode: forwards;
 }
+
+[data-tooltip] {
+  @apply relative cursor-pointer;
+}
+
+[data-tooltip]:after {
+  @apply absolute left-1/2 -translate-x-1/2 opacity-0 scale-50 transition-all ease-in-out duration-300 invisible;
+}
+
+[data-tooltip]:after {
+  content: attr(data-tooltip);
+  @apply bg-black/50 whitespace-nowrap px-2 py-1 text-white text-sm bottom-[calc(100%+0.5rem)] rounded-full;
+}
+
+[data-tooltip]:hover:after {
+  @apply scale-100 opacity-100 transition-all ease-in-out duration-300 visible;
+}
