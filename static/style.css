@@ -148,7 +148,7 @@ input[type="checkbox"]:checked + .admin-checkbox:before {
 }
 
 .modal-overlay {
-  @apply fixed z-40 top-0 left-0 w-full h-full bg-black bg-opacity-50 opacity-0;
+  @apply fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 opacity-0;
 }
 
 .modal-overlay[data-open="initial"] {
@@ -167,7 +167,7 @@ input[type="checkbox"]:checked + .admin-checkbox:before {
 }
 
 .modal {
-  @apply fixed z-50 top-[calc(50vh-10rem)] left-[calc(50vw-10rem)] bg-white rounded-xl w-[20rem] scale-0 flex flex-col;
+  @apply fixed top-[calc(50vh-10rem)] left-[calc(50vw-10rem)] bg-white rounded-xl w-[20rem] scale-0 flex flex-col;
 }
 
 .modal[data-open="initial"] {

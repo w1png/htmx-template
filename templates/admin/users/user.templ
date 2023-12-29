@@ -3,6 +3,7 @@ package admin_users_templates
 import "github.com/w1png/htmx-template/models"
 import "github.com/w1png/htmx-template/templates/components"
 import "fmt"
+import "github.com/w1png/htmx-template/templates/scripts"
 
 templ delete_user_confirmation_modal(user_id uint) {
 	@components.Modal(get_modal_id(user_id)) {
@@ -15,9 +16,9 @@ templ delete_user_confirmation_modal(user_id uint) {
 					class="admin-delete"
 					hx-delete={ fmt.Sprintf("/admin/api/users/%d", user_id) }
 					hx-swap="outerHTML"
-					onclick={ components.CloseModal(get_modal_id(user_id)) }
+					onclick={ scripts.CloseModal(get_modal_id(user_id)) }
 				>Удалить</button>
-				<button class="admin-submit" onclick={ components.CloseModal(get_modal_id(user_id)) }>
+				<button class="admin-submit" onclick={ scripts.CloseModal(get_modal_id(user_id)) }>
 					Отмена
 				</button>
 			</div>
@@ -70,7 +71,7 @@ templ bare_user(user *models.User, next_page int, is_last bool) {
 				<p class="hidden lg:flex">Редактировать</p>
 				<img class="block lg:hidden h-4 aspect-square" src="/static/edit.svg" alt="Редактировать"/>
 			</button>
-			<button class="admin-delete" onclick={ components.OpenModal(get_modal_id(user.ID)) }>
+			<button class="admin-delete" onclick={ scripts.OpenModal(get_modal_id(user.ID)) }>
 				<p class="hidden lg:flex">Удалить</p>
 				<img class="block lg:hidden h-4 aspect-square" src="/static/delete.svg" alt="Удалить"/>
 			</button>
