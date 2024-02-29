@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/golang-jwt/jwt"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"github.com/w1png/htmx-template/config"
 	"github.com/w1png/htmx-template/models"
 	"github.com/w1png/htmx-template/storage"
@@ -27,6 +27,10 @@ func UseAuth(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		if !token.Valid {
+			http.SetCookie(c.Response(), &http.Cookie{
+				Name:  "auth_token",
+				Value: "",
+			})
 			return next(c)
 		}
 
@@ -35,10 +39,11 @@ func UseAuth(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		user_id := uint(claims["user_id"].(float64))
-		user, err := storage.StorageInstance.GetUserById(user_id)
-		if err != nil {
+		var user *models.User
+		if err := storage.GormStorageInstance.DB.First(&user, user_id).Error; err != nil {
 			return next(c)
 		}
+
 		c.SetRequest(c.Request().WithContext(context.WithValue(c.Request().Context(), "user", user)))
 
 		return next(c)
@@ -47,10 +52,13 @@ func UseAuth(next echo.HandlerFunc) echo.HandlerFunc {
 
 func UseAdmin(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		c.Response().Header().Set("X-Robots-Tag", "noindex, nofollow")
+
 		user_context := c.Request().Context().Value("user")
 		if user_context == nil {
 			return c.NoContent(http.StatusUnauthorized)
 		}
+
 		user := user_context.(*models.User)
 		if user.IsAdmin {
 			return next(c)

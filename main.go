@@ -2,18 +2,17 @@ package main
 
 import (
 	"log"
-	"reflect"
 
 	"github.com/w1png/htmx-template/config"
-	"github.com/w1png/htmx-template/errors"
 	"github.com/w1png/htmx-template/models"
 	"github.com/w1png/htmx-template/storage"
+	"gorm.io/gorm"
 )
 
 func createDefaultAdmin() error {
-	if _, err := storage.StorageInstance.GetUserById(1); err == nil {
+	if err := storage.GormStorageInstance.DB.First(&models.User{}, 1).Error; err == nil {
 		return nil
-	} else if reflect.TypeOf(err) != reflect.TypeOf(&errors.ObjectNotFoundError{}) {
+	} else if gorm.ErrRecordNotFound != err {
 		return err
 	}
 
@@ -21,7 +20,7 @@ func createDefaultAdmin() error {
 	if err != nil {
 		return err
 	}
-	return storage.StorageInstance.CreateUser(admin)
+	return storage.GormStorageInstance.DB.Create(&admin).Error
 }
 
 func main() {

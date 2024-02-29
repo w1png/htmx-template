@@ -1,38 +1,59 @@
 package storage
 
 import (
+	"strconv"
+
 	"github.com/w1png/htmx-template/config"
 	"github.com/w1png/htmx-template/errors"
 	"github.com/w1png/htmx-template/models"
+	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
-type Storage interface {
-	CreateUser(user *models.User) error
-	GetUserById(id uint) (*models.User, error)
-	GetUserByUsername(username string) (*models.User, error)
-
-	GetAllUsers() ([]*models.User, error)
-	GetUsers(offset, limit int) ([]*models.User, error)
-	GetAllUsersByUsernameFuzzy(username string) ([]*models.User, error)
-	GetUsersByUsernameFuzzy(username string, offset, limit int) ([]*models.User, error)
-
-	GetUsersCount() (int, error)
-	UpdateUser(user *models.User) error
-	DeleteUserById(id uint) error
+type GormStorage struct {
+	DB *gorm.DB
 }
 
-var StorageInstance Storage
+var GormStorageInstance *GormStorage
 
 func InitStorage() error {
+	storage := &GormStorage{}
+
 	var err error
 	switch config.ConfigInstance.StorageType {
 	case "sqlite":
-		if StorageInstance, err = NewSQLiteStorage(); err != nil {
+		storage.DB, err = gorm.Open(sqlite.Open(config.ConfigInstance.SqlitePath), &gorm.Config{
+			Logger: logger.Default.LogMode(logger.Silent),
+		})
+		if err != nil {
+			return err
+		}
+	case "postgres":
+		storage.DB, err = gorm.Open(
+			postgres.Open(
+				"host="+config.ConfigInstance.PostgresHost+
+					" port="+strconv.Itoa(config.ConfigInstance.PostgresPort)+
+					" user="+config.ConfigInstance.PostgresUser+
+					" password="+config.ConfigInstance.PostgresPassword+
+					" dbname="+config.ConfigInstance.PostgresDatabase+
+					" sslmode=disable",
+			),
+			&gorm.Config{
+				Logger: logger.Default.LogMode(logger.Silent),
+			},
+		)
+		if err != nil {
 			return err
 		}
 	default:
 		return errors.NewUnknownDatabaseTypeError(config.ConfigInstance.StorageType)
 	}
 
-	return nil
+	GormStorageInstance = storage
+
+	return storage.DB.AutoMigrate(
+		&models.User{},
+	)
 }

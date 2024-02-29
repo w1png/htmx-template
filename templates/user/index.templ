@@ -1,28 +1,10 @@
 package user_templates
 
-import "github.com/w1png/htmx-template/templates/components"
-
-templ Index(ctx context.Context) {
-	@Base(ctx) {
-		@IndexApi()
-	}
+templ Index() {
+@Base("Главная") {
+@IndexApi()
+}
 }
 
 templ IndexApi() {
-	<div class="container mx-auto h-screen p-8 mt-16 sample-transition" id="swappable_content">
-		<div class="w-full h-full border-2 rounded-xl flex flex-col justify-center items-center">
-			<h1 class="text-4xl">Content</h1>
-			<button class="py-2 px-4 bg-red-400 rounded-md" onclick={ components.OpenModal("test-modal") }>Open modal</button>
-			@components.Modal("test-modal") {
-				<div class="flex flex-col p-4">
-					<p>
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-					</p>
-					<p>
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-					</p>
-				</div>
-			}
-		</div>
-	</div>
 }

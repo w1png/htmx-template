@@ -1,18 +1,28 @@
 package user_handlers
 
 import (
+	"fmt"
 	"net/http"
-	"reflect"
 
 	"github.com/golang-jwt/jwt"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
 	"github.com/w1png/htmx-template/config"
-	"github.com/w1png/htmx-template/errors"
+	"github.com/w1png/htmx-template/models"
 	"github.com/w1png/htmx-template/storage"
-	admin_templates "github.com/w1png/htmx-template/templates/admin"
 	user_templates "github.com/w1png/htmx-template/templates/user"
 	"github.com/w1png/htmx-template/utils"
+	"gorm.io/gorm"
 )
+
+func GatherLoginRoutes(user_page_group *echo.Echo, user_api_group, admin_page_group, admin_api_group *echo.Group) {
+	user_page_group.GET("/admin_login", LoginPageHandler)
+	user_api_group.GET("/admin_login", LoginPageApiHandler)
+
+	user_page_group.GET("/logout", LogoutHandler)
+
+	user_api_group.POST("/admin_login", PostLoginHandler)
+}
 
 func LoginPageApiHandler(c echo.Context) error {
 	if c.Request().Context().Value("user") != nil {
@@ -26,10 +36,12 @@ func LoginPageApiHandler(c echo.Context) error {
 
 func LoginPageHandler(c echo.Context) error {
 	if c.Request().Context().Value("user") != nil {
+		c.Response().Header().Set("HX-Redirect", "/admin")
+		c.Response().Header().Set("HX-Replace-Url", "/admin")
 		return c.Redirect(http.StatusFound, "/admin")
 	}
 
-	return utils.Render(c, user_templates.Login(c.Request().Context()))
+	return utils.Render(c, user_templates.Login())
 }
 
 func PostLoginHandler(c echo.Context) error {
@@ -39,6 +51,7 @@ func PostLoginHandler(c echo.Context) error {
 
 	username := c.FormValue("username")
 	password := c.FormValue("password")
+	fmt.Printf("username: %v\tpassword: %v\n", username, password)
 
 	if username == "" {
 		return c.String(http.StatusBadRequest, "Имя пользователя не может быть пустым")
@@ -48,13 +61,15 @@ func PostLoginHandler(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Пароль не может быть пустым")
 	}
 
-	user, err := storage.StorageInstance.GetUserByUsername(username)
-	if err != nil {
-		if reflect.TypeOf(err) == reflect.TypeOf(&errors.ObjectNotFoundError{}) {
+	var user *models.User
+	if err := storage.GormStorageInstance.DB.Where("username = ?", username).First(&user).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
 			return c.String(http.StatusBadRequest, "Неправильный логин или пароль")
 		}
+		log.Error(err)
 		return c.String(http.StatusInternalServerError, "Неизвестная ошибка")
 	}
+	fmt.Printf("user: %v\n", user)
 
 	if !user.ComparePassword(password) {
 		return c.String(http.StatusBadRequest, "Неправильный логин или пароль")
@@ -66,6 +81,7 @@ func PostLoginHandler(c echo.Context) error {
 
 	tokenString, err := token.SignedString([]byte(config.ConfigInstance.JWTSecret))
 	if err != nil {
+		log.Error(err)
 		return c.String(http.StatusInternalServerError, "Неизвестная ошибка")
 	}
 
@@ -75,5 +91,21 @@ func PostLoginHandler(c echo.Context) error {
 		Path:  "/",
 	})
 
-	return utils.Render(c, admin_templates.IndexApiNavbar())
+	c.Response().Header().Set("HX-Redirect", "/admin")
+	c.Response().Header().Set("HX-Replace-Url", "/admin")
+	return c.Redirect(http.StatusFound, "/admin")
+}
+
+func LogoutHandler(c echo.Context) error {
+	http.SetCookie(c.Response(), &http.Cookie{
+		Name:   "auth_token",
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1,
+	})
+
+	c.Response().Header().Set("HX-Redirect", "/")
+	c.Response().Header().Set("HX-Replace-Url", "/")
+	return c.Redirect(http.StatusFound, "/")
+
 }

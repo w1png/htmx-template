@@ -1,11 +1,10 @@
-package user_templates 
+package user_templates
 
 import "github.com/w1png/htmx-template/templates"
-import "github.com/w1png/htmx-template/utils"
 
-templ Base(ctx context.Context) {
-	@templates.Base(ctx) {
-		@Navbar(utils.GetUserFromContext(ctx))
-		{ children... }
-	}
+templ Base(title string) {
+@templates.Base(title) {
+@Navbar()
+{ children... }
+}
 }

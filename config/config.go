@@ -1,42 +1,61 @@
 package config
 
 import (
+	"fmt"
 	"os"
+	"reflect"
+	"strconv"
 
+	"github.com/labstack/gommon/log"
 	"github.com/w1png/htmx-template/errors"
 )
 
 var ConfigInstance *Config
 
 type Config struct {
-	Port      string
-	JWTSecret string
+	Port      string `env:"PORT"`
+	JWTSecret string `env:"JWT_SECRET"`
 
-	StorageType string
+	StorageType string `env:"STORAGE_TYPE"`
 
-	SqlitePath string
+	SqlitePath       string `env:"SQLITE_PATH" default:"data.db"`
+	PostgresHost     string `env:"POSTGRES_HOST" default:"localhost"`
+	PostgresPort     int    `env:"POSTGRES_PORT" default:"5432"`
+	PostgresUser     string `env:"POSTGRES_USER" default:"postgres"`
+	PostgresPassword string `env:"POSTGRES_PASSWORD" default:"postgres"`
+	PostgresDatabase string `env:"POSTGRES_DATABASE" default:"postgres"`
 }
 
 func InitConfig() error {
-	var ok bool
-	config := &Config{}
+	ConfigInstance = &Config{}
 
-	if config.Port, ok = os.LookupEnv("PORT"); !ok {
-		return errors.NewEnvironmentVariableNotFoundError("PORT")
-	}
-	if config.JWTSecret, ok = os.LookupEnv("JWT_SECRET"); !ok {
-		return errors.NewEnvironmentVariableNotFoundError("JWT_SECRET")
-	}
+	for i := 0; i < reflect.TypeOf(Config{}).NumField(); i++ {
+		field := reflect.TypeOf(Config{}).Field(i)
 
-	if config.StorageType, ok = os.LookupEnv("STORAGE_TYPE"); !ok {
-		return errors.NewEnvironmentVariableNotFoundError("STORAGE_TYPE")
-	}
+		envName := field.Tag.Get("env")
 
-	if config.SqlitePath, ok = os.LookupEnv("SQLITE_PATH"); !ok {
-		return errors.NewEnvironmentVariableNotFoundError("SQLITE_PATH")
-	}
+		envValue, ok := os.LookupEnv(envName)
+		if !ok {
+			if field.Tag.Get("default") != "" {
+				envValue = field.Tag.Get("default")
+				log.Warn(fmt.Sprintf("Environment variable %s not set. Using default value %s", envName, envValue))
+			} else {
+				return errors.NewEnvironmentVariableNotFoundError(envName)
+			}
+		}
 
-	ConfigInstance = config
+		if field.Type.Kind() == reflect.Int {
+			envValueInt, err := strconv.Atoi(envValue)
+			if err != nil {
+				return errors.NewEnvironmentVariableNotFoundError(envName)
+			}
+			fieldValue := reflect.ValueOf(ConfigInstance).Elem().FieldByName(field.Name)
+			fieldValue.SetInt(int64(envValueInt))
+			continue
+		}
+		fieldValue := reflect.ValueOf(ConfigInstance).Elem().FieldByName(field.Name)
+		fieldValue.SetString(envValue)
+	}
 
 	return nil
 }
